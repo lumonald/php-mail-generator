@@ -88,15 +88,37 @@
     <b-row>
       <b-col sm="12">
         <div class="output mt-1">
-          <div>$to = "{{ spaced(toName) }}{{ formatEmail(toEmail, toName) }}";</div>
-          <div>$subject = "{{ subject }}";</div>
-          <div>$message = "{{ message }}";</div>
-          <div>$headers = "From: {{ spaced(fromName) }}{{ formatEmail(fromEmail, fromName) }}\r\n";</div>
+          <div>
+            $to = "<span v-if="toName">
+              <span v-dompurify-html="toName"></span>
+            </span>
+            <span v-if="toName && toEmail">&nbsp;&lt;</span>
+            <span v-if="toEmail">
+              <span v-dompurify-html="toEmail"></span>
+              <span v-if="toName && toEmail">&gt;</span>
+            </span>";
+          </div>
+          <div>
+            $subject = "<span v-dompurify-html="subject"></span>";
+          </div>
+          <div>
+            $message = "<span v-dompurify-html="message"></span>";
+          </div>
+          <div>
+            $headers = "From: <span v-if="fromName">
+              <span v-dompurify-html="fromName"></span>
+            </span>
+            <span v-if="fromName && fromEmail">&nbsp;&lt;</span>
+            <span v-if="fromEmail">
+              <span v-dompurify-html="fromEmail"></span>
+              <span v-if="fromName && fromEmail">&gt;</span>
+            </span>\r\n";
+          </div>
           <div>$headers .= "MIME-Version: 1.0\r\n";</div>
-          <div v-if="cc">{{ insertHeader(cc, 'Cc') }}</div>
-          <div v-if="bcc">{{ insertHeader(bcc, 'Bcc') }}</div>
-          <div v-if="replyToEmail">{{ insertHeader(replyToEmail, 'Reply-to') }}</div>
-          <div>$headers .= "Content-Type: text/{{ type }}; charset=UTF-8\r\n";</div>
+          <div v-if="cc">$headers .= "Cc: <span v-dompurify-html="cc"></span>\r\n";</div>
+          <div v-if="bcc">$headers .= "Bcc: <span v-dompurify-html="bcc"></span>\r\n";</div>
+          <div v-if="replyToEmail">$headers .= "Reply-to: <span v-dompurify-html="replyToEmail"></span>\r\n";</div>                    
+          <div>$headers .= "Content-Type: text/<span v-dompurify-html="type"></span>; charset=UTF-8\r\n";</div>
           <div>
             <br />mail($to, $subject, $message, $headers);
           </div>
@@ -125,14 +147,14 @@ export default {
       output: ""
     };
   },
-  validations: {
+  validations: {    
     fromEmail: {
       required,
       email
     },
     toEmail: {
       email
-    },
+    },    
     cc: {
       email
     },
@@ -144,24 +166,9 @@ export default {
     },
     message: {
       maxLength: maxLength(70)
-    }
-  },
-  methods: {
-    formatEmail: (email, name) => {
-      if (name && email) {
-        return "<" + email + ">";
-      } else {
-        return email;
-      }
-    },
-    insertHeader: (value, type) => {
-      return '$headers .= "' + type + ": " + value + '\\r\\n";';
-    },
-    insertNewline: values => {
-      if (values[0]) return '\\r\\n";';
-    },
-    spaced: value => {
-      if (value) return value + " ";
+    }, 
+    subject: {
+      maxLength: maxLength(70)
     }
   }
 };
