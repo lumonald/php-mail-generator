@@ -15,7 +15,11 @@ Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.productionTip = false
 Vue.use(BootstrapVue)
 Vue.use(Vuelidate)
-Vue.use(VueDOMPurifyHTML)
+Vue.use(VueDOMPurifyHTML, {
+  default: {
+    FORBID_TAGS: ['svg', 'math']
+  }
+});
 
 new Vue({
   render: h => h(App),
